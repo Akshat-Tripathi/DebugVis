@@ -56,7 +56,7 @@ class Graph:
     def draw(self, node_colour_func=lambda x: BEST_COLOUR, edge_colour_func=lambda a, b: BEST_COLOUR,
              label_func=str) -> str:
         """
-        Returns the json representation of the graph, then clears it
+        Returns the json representation of the graph
         node_colour_func - takes an object and returns its colour
         edge_colour_func - takes a pair of objects and returns the colour of the edge connecting them
         label_func - takes an object and returns its label
@@ -68,7 +68,6 @@ class Graph:
         edges = [
             {"from": str(id(from_)), "to": str(id(to)), "color": edge_colour_func(from_, to)} for (from_, to) in self._edges
         ]
-        self.clear()
         return str({
             "kind": {"graph": True},
             "nodes": nodes,
