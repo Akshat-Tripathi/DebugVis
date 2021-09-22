@@ -25,6 +25,14 @@ class ListCollection:
         return self.label
 
 
+class Null:
+    def __str__(self):
+        return "Null"
+
+    def __repr__(self):
+        return "Null"
+
+
 def derive_graph(obj, field_filter=lambda f: False,
                  ignore_collections=True, node_colour_func=lambda x: BEST_COLOUR,
                  edge_colour_func=lambda a, b: BEST_COLOUR, label_func=str) -> str:
@@ -45,17 +53,16 @@ def derive_graph(obj, field_filter=lambda f: False,
                 pass
             elif is_collection(value):
                 if ignore_collections:
-                    for v in value:
-                        links.add((obj, v))
-                        _dfs(v, visited=visited, links=links)
-                else:
                     dummy = ListCollection(type(value), value)
                     visited.add(dummy)
                     links.add((obj, dummy))
-                    for v in value:
-                        links.add((dummy, v))
-                        _dfs(v, visited=visited, links=links)
+                    obj = dummy
+                for v in value:
+                    v = Null() if v is None else v
+                    links.add((obj, v))
+                    _dfs(v, visited=visited, links=links)
             else:
+                value = Null() if value is None else value
                 links.add((obj, value))
                 _dfs(value, visited=visited, links=links)
 
