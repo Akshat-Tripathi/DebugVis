@@ -28,6 +28,8 @@ class Null:
 
 
 class UnitNode:
+    """Used to represent primitive data/or data that you don't want to expand"""
+
     def __init__(self, data):
         self.data = data
 
@@ -36,9 +38,11 @@ class UnitNode:
 
 
 class Graph:
-    def __init__(self):
+    def __init__(self, data=None):
         self._nodes = set()
         self._edges = set()
+        if data is not None:
+            self._derive_graph(data)
 
     def add(self, node):
         self._nodes.add(node)
@@ -51,6 +55,12 @@ class Graph:
 
     def draw(self, node_colour_func=lambda x: BEST_COLOUR, edge_colour_func=lambda a, b: BEST_COLOUR,
              label_func=str) -> str:
+        """
+        Returns the json representation of the graph, then clears it
+        node_colour_func - takes an object and returns its colour
+        edge_colour_func - takes a pair of objects and returns the colour of the edge connecting them
+        label_func - takes an object and returns its label
+        """
         nodes = [
             {"id": str(id(n)), "label": label_func(n), "color": node_colour_func(n)} for n in self._nodes
         ]
@@ -65,14 +75,11 @@ class Graph:
             "edges": edges
         }).replace("\'", "\"").replace("True", "true")
 
-    def derive_graph(self, obj, field_filter=lambda f: False, ignore_collections=True):
+    def _derive_graph(self, obj, field_filter=lambda f: False, ignore_collections=True):
         """
         Populates the graph with the edges and nodes of a given structure.
         field_filter - returns True iff the field should not be shown the resulting diagram
         ignore_collections - if set to False, then all collections will be linked to an intermediate node
-        node_colour_func - takes an object and returns its colour
-        edge_colour_func - takes a pair of objects and returns the colour of the edge connecting them
-        label_func - takes an object and returns its label
         """
         def _dfs(obj, visited, links):
             if obj in visited:
@@ -103,7 +110,7 @@ class Graph:
             self._nodes.add(v)
         for l in links:
             self._edges.add(l)
-    
+
     def clear(self):
         self._nodes.clear()
         self._edges.clear()
